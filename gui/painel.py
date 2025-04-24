@@ -19,7 +19,7 @@ class PainelAtendimento:
         btn_chamar = tk.Button(root, text="Chamar Próxima", font=("Arial", 14), command=self.chamar_proxima)
         btn_chamar.pack(pady=10)
 
-      def gerar_senha(self):
+    def gerar_senha(self):
         senha = self.service.gerar_senha()
         messagebox.showinfo("Senha Gerada", f"Sua senha é: {senha}")
 
