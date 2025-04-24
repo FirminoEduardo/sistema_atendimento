@@ -6,8 +6,8 @@ class AtendimentoService:
         self.fila = FilaSenhas()
         self.senha_atual: Senha | None = None
 
-    def gerar_senha(self) -> Senha:
-        return self.fila.adicionar_senha()
+    def gerar_senha(self, tipo: str = "comum") -> Senha:
+        return self.fila.adicionar_senha(tipo)
     
     def chamar_proxima(self) -> Senha | None:
         self.senha_atual = self.fila.proxima_senha()
