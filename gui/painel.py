@@ -9,15 +9,15 @@ class PainelAtendimento:
         self.root = root
         self.root.title("Sistema de Atendimento Bancário")
         self.service = AtendimentoService()
-
         self.painel_chamadas = PainelChamadas()
 
         self.label_senha = tk.Label(root, text="Senha Atual: ---", font=("Arial", 24), fg="blue")
-        self.label_senha.pack(pady=20)
+        self.label_senha.pack(pady=10)
 
         self.status_label = tk.Label(root, text="", font=("Arial", 12), fg="green")
         self.status_label.pack(pady=5)
 
+        # Botões para retirada de senha
         btn_comum = tk.Button(root, text="Retirar Senha Comum", font=("Arial", 14),
                               command=lambda: self.gerar_senha("comum"))
         btn_comum.pack(pady=5)
@@ -26,23 +26,31 @@ class PainelAtendimento:
                                     command=lambda: self.gerar_senha("prioritaria"))
         btn_prioritaria.pack(pady=5)
 
-        self.btn_chamar = tk.Button(root, text="Chamar Próxima", font=("Arial", 14),
-                                    command=self.chamar_proxima)
-        self.btn_chamar.pack(pady=10)
+        # Guichês
+        guiche_frame = tk.LabelFrame(root, text="Guichês", padx=10, pady=10)
+        guiche_frame.pack(pady=15)
+
+        self.guiche_botoes = []
+        for i in range(1, 4):  # 3 guichês
+            btn = tk.Button(guiche_frame, text=f"Guichê {i}", font=("Arial", 12),
+                            command=lambda g=i: self.chamar_proxima(g))
+            btn.grid(row=0, column=i-1, padx=10)
+            self.guiche_botoes.append(btn)
 
     def gerar_senha(self, tipo):
         senha = self.service.gerar_senha(tipo)
         messagebox.showinfo("Senha Gerada", f"Sua senha é: {senha}")
 
-    def chamar_proxima(self):
+    def chamar_proxima(self, guiche):
         senha = self.service.chamar_proxima()
         if senha:
             self.label_senha.config(text=f"Senha Atual: {senha}")
-            self.status_label.config(text=f"Atendendo {senha}...")
-            self.btn_chamar.config(state="disabled")
+            self.status_label.config(text=f"Atendendo {senha} no Guichê {guiche}")
+            self.painel_chamadas.atualizar_senha(f"{senha} - Guichê {guiche}")
+            tocar_som("assets/ding.mp3")
 
-            self.painel_chamadas.atualizar_senha(senha)
-            tocar_som("assets/ding.mp3")  # Caminho do som
+            for btn in self.guiche_botoes:
+                btn.config(state="disabled")
 
             self.root.after(5000, self.finalizar_atendimento)
         else:
@@ -50,4 +58,5 @@ class PainelAtendimento:
 
     def finalizar_atendimento(self):
         self.status_label.config(text="Atendimento finalizado.")
-        self.btn_chamar.config(state="normal")
+        for btn in self.guiche_botoes:
+            btn.config(state="normal")
