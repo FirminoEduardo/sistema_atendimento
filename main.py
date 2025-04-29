@@ -1,4 +1,4 @@
-import _tkinter as tk
+import tkinter as tk
 from gui.painel import PainelAtendimento
 
 if __name__ == "__main__":

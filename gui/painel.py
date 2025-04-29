@@ -1,12 +1,16 @@
 import tkinter as tk
 from tkinter import messagebox
 from services.atendimento_service import AtendimentoService
+from gui.painel_chamadas import PainelChamadas
+from utils.audio import tocar_som
 
 class PainelAtendimento:
     def __init__(self, root):
         self.root = root
         self.root.title("Sistema de Atendimento Bancário")
         self.service = AtendimentoService()
+
+        self.painel_chamadas = PainelChamadas()
 
         self.label_senha = tk.Label(root, text="Senha Atual: ---", font=("Arial", 24), fg="blue")
         self.label_senha.pack(pady=20)
@@ -35,9 +39,11 @@ class PainelAtendimento:
         if senha:
             self.label_senha.config(text=f"Senha Atual: {senha}")
             self.status_label.config(text=f"Atendendo {senha}...")
-            self.btn_chamar.config(state="disabled")  # Desativa botão
+            self.btn_chamar.config(state="disabled")
 
-            # Simula atendimento de 5 segundos (5000 milissegundos)
+            self.painel_chamadas.atualizar_senha(senha)
+            tocar_som("assets/ding.mp3")  # Caminho do som
+
             self.root.after(5000, self.finalizar_atendimento)
         else:
             messagebox.showwarning("Fila Vazia", "Nenhuma senha na fila.")
